@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Equipo Pokémon</title>
+    <link rel="stylesheet" href="/css/index.css">
+</head>
+<body>
+    <h1>Equipo de <%= name %></h1>
+    <div class="container">
+        <% pokemons.forEach((pokemon) => { %>
+            <div class="item">
+                <p><%= pokemon.name %></p>
+                <img id="<%= pokemon.name %>" alt="<%= pokemon.name %>">
+                <p><%= pokemon.type %></p>
+            </div>
+        <% }); %>
+    </div>
+    <script src="/js/index.js"></script>
+</body>
+</html>
