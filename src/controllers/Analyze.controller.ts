@@ -14,7 +14,7 @@ export const analyzeText = (req: Request, res: Response) => {
 };
 
 export const showTeam = (req: Request, res: Response) => {
-  // Ejemplo de datos, reemplaza esto con tu lógica real
+  // Ejemplo de datos
   const name = "Ash";
   const pokemons = [
     { name: "venusaur", type: "planta" },

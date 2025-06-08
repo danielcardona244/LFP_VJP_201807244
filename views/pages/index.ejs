@@ -1,21 +1,67 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Equipo Pokémon</title>
+    <title>Analizador Pokémon</title>
     <link rel="stylesheet" href="/css/index.css">
 </head>
 <body>
-    <h1>Equipo de <%= name %></h1>
-    <div class="container">
-        <% pokemons.forEach((pokemon) => { %>
-            <div class="item">
-                <p><%= pokemon.name %></p>
-                <img id="<%= pokemon.name %>" alt="<%= pokemon.name %>">
-                <p><%= pokemon.type %></p>
-            </div>
-        <% }); %>
-    </div>
+    <!-- Barra de navegación -->
+    <nav>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/error-report">Error Report</a></li>
+            <li>
+                Archivo
+                <ul>
+                    <li><button onclick="limpiarEditor()">Limpiar Editor</button></li>
+                    <li>
+                        <input type="file" id="fileInput" accept=".pklfp">
+                        <button onclick="cargarArchivo()">Cargar Archivo</button>
+                    </li>
+                    <li><button onclick="guardarArchivo()">Guardar Archivo</button></li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Editor de texto -->
+    <div id="editor" contenteditable="true" style="width: 100%; min-height: 300px; border: 1px solid #ccc; font-family: monospace; white-space: pre;"></div>
+    <br>
+    <button onclick="analizar()">Analizar</button>
+
+    <!-- Tabla de tokens -->
+    <h2>Tokens reconocidos</h2>
+    <table id="tablaTokens" border="1">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Fila</th>
+                <th>Columna</th>
+                <th>Lexema</th>
+                <th>Token</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+
+    <!-- (Opcional) Tabla de errores -->
+    <h2>Errores léxicos</h2>
+    <table id="tablaErrores" border="1">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Fila</th>
+                <th>Columna</th>
+                <th>Carácter</th>
+                <th>Descripción</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+
     <script src="/js/index.js"></script>
 </body>
 </html>

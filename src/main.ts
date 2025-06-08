@@ -15,7 +15,7 @@ app.use(express.json());
 app.use("/api", analyzeRouter);
 
 app.get('/', (req: Request, res: Response) => {
-    res.send('¡Hola, mundo desde Express!');    
+    res.render('pages/index', { name: "", pokemons: [] });
 });
 
 

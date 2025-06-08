@@ -42,11 +42,25 @@ class LexicalAnalyzer {
           } else if (char === '=') {
             this.state = 4; this.addCharacter(char);
           } else if (char === ':') {
-            this.state = 5; this.addCharacter(char);
+            // Detectar :=
+            if (input[i + 1] === '=') {
+              this.state = 11; // Nuevo estado para:=
+              this.addCharacter(char);
+            } else {
+              this.state = 5; this.addCharacter(char);
+            }
           } else if (char === ',') {
             this.state = 6; this.addCharacter(char);
           } else if (char === '"') {
             this.state = 7; this.addCharacter(char);
+          } else if (char === '[') {
+            this.state = 12; this.addCharacter(char);
+          } else if (char === ']') {
+            this.state = 13; this.addCharacter(char);
+          } else if (char === '{') {
+            this.state = 14; this.addCharacter(char);
+          } else if (char === '}') {
+            this.state = 15; this.addCharacter(char);
           } else if (/\d/.test(char)) {
             this.state = 8; this.addCharacter(char);
           } else if (/[a-zA-Z]/.test(char)) {
@@ -125,6 +139,30 @@ class LexicalAnalyzer {
           this.addToken(Type.STRING, this.auxChar, this.row, this.column - this.auxChar.length);
           this.clean(); i--;
           break;
+        case 11: // :=
+          if (input[i] === ':' && input[i + 1] === '=') {
+            this.addCharacter('='); // ya agregaste ':', ahora '='
+            i++; // saltar '='
+          }
+          this.addToken(Type.ASSIGN, this.auxChar, this.row, this.column - this.auxChar.length);
+          this.clean();
+          break;
+        case 12: // [
+          this.addToken(Type.BRACKET_OPEN, this.auxChar, this.row, this.column - this.auxChar.length);
+          this.clean(); i--;
+          break;
+        case 13: // ]
+          this.addToken(Type.BRACKET_CLOSE, this.auxChar, this.row, this.column - this.auxChar.length);
+          this.clean(); i--;
+          break;
+        case 14: // {
+          this.addToken(Type.BRACE_OPEN, this.auxChar, this.row, this.column - this.auxChar.length);
+          this.clean(); i--;
+          break;
+        case 15: // }
+          this.addToken(Type.BRACE_CLOSE, this.auxChar, this.row, this.column - this.auxChar.length);
+          this.clean(); i--;
+          break;
       }
     }
     return this.tokenList;
@@ -144,8 +182,8 @@ class LexicalAnalyzer {
     this.tokenList.push(new Token(type, lexeme, row, column));
   }
 
-  private addError(type: Type, lexeme: string, row: number, column: number) {
-    this.errorList.push(new Token(type, lexeme, row, column));
+  private addError(type: Type, lexeme: string, row: number, column: number, descripcion?: string) {
+    this.errorList.push(new Token(type, lexeme, row, column, descripcion));
   }
 
   getErrorList() {
