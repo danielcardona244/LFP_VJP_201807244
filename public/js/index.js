@@ -180,5 +180,21 @@ function mostrarAviso(mensaje, color="#1976d2") {
     }, 2500);
 }
 
+// Limpia las tablas de tokens y errores
+function limpiarTablas() {
+    const tbodyTokens = document.querySelector('#tablaTokens tbody');
+    if (tbodyTokens) tbodyTokens.innerHTML = '';
+    const tbodyErrores = document.querySelector('#tablaErrores tbody');
+    if (tbodyErrores) tbodyErrores.innerHTML = '';
+}
+
+// Limpia tablas al subir un nuevo archivo
+document.addEventListener('DOMContentLoaded', function() {
+    const fileInput = document.getElementById('fileInput');
+    if (fileInput) {
+        fileInput.addEventListener('change', limpiarTablas);
+    }
+});
+
 
 
