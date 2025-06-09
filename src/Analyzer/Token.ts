@@ -24,6 +24,6 @@ export class Token {
     public lexema: string,
     public fila: number,
     public columna: number,
-    public descripcion?: string // <-- Nuevo parámetro opcional
+    public descripcion?: string 
   ) {}
 }

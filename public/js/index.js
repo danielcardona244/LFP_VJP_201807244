@@ -1,3 +1,4 @@
+// Carga los sprites de los Pokémon usando la PokéAPI al cargar la página de equipos
 document.addEventListener('DOMContentLoaded', () => {
     const getPokemon = async (name, img) => {
         let response = await fetch(`https://pokeapi.co/api/v2/pokemon/${name.toLowerCase()}`);
@@ -12,17 +13,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-
 // Diccionario para mostrar el nombre del token
 const TypeNames = [
     "PAR_OPEN", "PAR_CLOSE", "SEMICOLON", "EQUAL", "RESERVED_WORD", "TYPE", "NUMBER", "STRING", "ID",
     "COLON", "COMMA", "ASSIGN", "BRACKET_OPEN", "BRACKET_CLOSE", "BRACE_OPEN", "BRACE_CLOSE", "UNKNOW"
 ];
 
+// Limpia el editor de texto
 function limpiarEditor() {
     document.getElementById('editor').innerText = '';
 }
 
+// Carga el contenido de un archivo al editor
 function cargarArchivo() {
     const fileInput = document.getElementById('fileInput');
     const file = fileInput.files[0];
@@ -38,6 +40,7 @@ function cargarArchivo() {
     reader.readAsText(file);
 }
 
+// Guarda el contenido actual del editor como archivo .pklfp
 function guardarArchivo() {
     const contenido = document.getElementById('editor').innerText;
     const blob = new Blob([contenido], { type: 'text/plain' });
@@ -47,6 +50,7 @@ function guardarArchivo() {
     a.click();
 }
 
+// Envía el contenido del editor al backend para análisis léxico
 function analizar() {
     const contenido = document.getElementById('editor').innerText;
     fetch('/api/analyze', {
@@ -60,53 +64,44 @@ function analizar() {
     });
 }
 
+// Procesa la respuesta del backend: muestra tokens y errores, resalta si no hay errores
 function procesarAnalisis(data, contenido) {
     mostrarErrores(data.errors);
     mostrarTokens(data.tokens);
     if (data.errors && data.errors.length > 0) {
-        document.getElementById('editor').innerText = contenido; // Limpia el resaltado
-        alert("Se encontraron errores léxicos. Revisa la tabla de errores.");
+        document.getElementById('editor').innerText = contenido;
+        mostrarAviso("Se encontraron errores léxicos. Revisa la tabla de errores.", "#d32f2f");
     } else {
         resaltarTokens(data.tokens, contenido);
-        alert("Análisis completado. Revisa el resaltado en el editor y la tabla de tokens.");
+        mostrarAviso("Análisis completado. Revisa el resaltado en el editor y la tabla de tokens.", "#43a047");
     }
 }
 
+// Resalta los tokens en el editor usando colores según el tipo
 function resaltarTokens(tokens, originalText) {
     let html = '';
     let pos = 0;
 
     tokens.forEach(token => {
-        // Calcula la posición real del token en el texto plano
         const start = originalText.indexOf(token.lexema, pos);
-        if (start === -1) return; // No encontrado, ignora
+        if (start === -1) return;
         const end = start + token.lexema.length;
-
-        // Agrega el texto anterior sin formato
         html += escapeHtml(originalText.slice(pos, start));
-
-        // Determina el color según el tipo de token
         let color = 'black';
         switch(token.tipo) {
             case 4: color = 'blue'; break;      // Palabras reservadas
             case 7: color = 'orange'; break;    // Cadenas
             case 6: color = 'purple'; break;    // Números
-            case 2: case 3: case 9: case 10: case 0: case 1:
-                color = 'black'; break;         // Símbolos
+            default: color = 'black'; break;
         }
-
-        // Agrega el token resaltado
         html += `<span style="color:${color}; font-weight:bold;">${escapeHtml(token.lexema)}</span>`;
         pos = end;
     });
-
-    // Agrega el resto del texto
     html += escapeHtml(originalText.slice(pos));
-
     document.getElementById('editor').innerHTML = html;
 }
 
-// Función para escapar caracteres HTML especiales
+// Escapa caracteres HTML especiales para evitar problemas de inyección
 function escapeHtml(text) {
     return text.replace(/[&<>"']/g, function(m) {
         return ({
@@ -119,6 +114,7 @@ function escapeHtml(text) {
     });
 }
 
+// Muestra la tabla de tokens reconocidos
 function mostrarTokens(tokens) {
     const tbody = document.querySelector('#tablaTokens tbody');
     tbody.innerHTML = '';
@@ -135,6 +131,7 @@ function mostrarTokens(tokens) {
     });
 }
 
+// Muestra la tabla de errores léxicos
 function mostrarErrores(errors) {
     const tbody = document.querySelector('#tablaErrores tbody');
     tbody.innerHTML = '';
@@ -149,6 +146,38 @@ function mostrarErrores(errors) {
         `;
         tbody.appendChild(tr);
     });
+}
+
+// Envía el contenido del editor al backend para mostrar los equipos en una nueva pestaña
+function verEquipos() {
+    const contenido = document.getElementById('editor').innerText;
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '/api/team';
+    form.target = '_blank';
+
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'input';
+    input.value = contenido;
+
+    form.appendChild(input);
+    document.body.appendChild(form);
+    form.submit();
+    document.body.removeChild(form);
+}
+
+// Muestra un aviso flotante estilizado
+function mostrarAviso(mensaje, color="#1976d2") {
+    const aviso = document.getElementById('aviso');
+    aviso.innerText = mensaje;
+    aviso.style.background = color;
+    aviso.style.display = 'block';
+    aviso.style.opacity = '1';
+    setTimeout(() => {
+        aviso.style.opacity = '0';
+        setTimeout(() => aviso.style.display = 'none', 300);
+    }, 2500);
 }
 
 

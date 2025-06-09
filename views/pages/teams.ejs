@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Equipos Pokémon</title>
+    <link rel="stylesheet" href="/css/index.css">
+</head>
+<body>
+    <h1 class="main-title">Equipos Pokémon</h1>
+    <% if (typeof errorMsg !== 'undefined' && errorMsg) { %>
+        <div class="container">
+            <div class="error-msg"><%= errorMsg %></div>
+        </div>
+    <% } %>
+    <% jugadores.forEach(jugador => { %>
+        <div class="container">
+            <h2><%= jugador.name %></h2>
+            <div class="team">
+                <% jugador.pokemons.forEach(pokemon => { %>
+                    <div class="item">
+                        <img id="<%= pokemon.name.toLowerCase() %>" alt="<%= pokemon.name %>">
+                        <p style="margin:8px 0 0 0;"><b><%= pokemon.name %></b></p>
+                        <p style="margin:0; color:#555;"><%= pokemon.type %></p>
+                    </div>
+                <% }) %>
+            </div>
+        </div>
+    <% }) %>
+    <button class="back-btn" onclick="window.opener && window.opener.focus(); window.close();">Regresar a la página principal</button>
+    <script src="/js/index.js"></script>
+</body>
+</html>
