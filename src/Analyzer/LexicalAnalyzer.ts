@@ -180,45 +180,57 @@ class LexicalAnalyzer {
         case 56: if (char === 'u') { this.state = 57; this.addCharacter(char); } else { this.state = 9; this.addCharacter(char); } break;
         case 57: if (char === 'i') { this.state = 58; this.addCharacter(char); } else { this.state = 9; this.addCharacter(char); } break;
         case 58: if (char === 'c') { this.state = 59; this.addCharacter(char); } else { this.state = 9; this.addCharacter(char); } break;
-        case 59: if (char === 'o') { this.state = 60; this.addCharacter(char); } else { this.state = 9; this.addCharacter(char); } break;
-        case 60: if (!((char >= 'a' && char <= 'z') || (char >= 'A' && char <= 'Z'))) {
-          this.addToken(Type.TYPE, this.auxChar, this.row, this.column - this.auxChar.length); this.clean(); i--;
-        } else { this.state = 9; this.addCharacter(char); } break;
+        case 59: if (char === 'o') {
+  this.addCharacter(char);
+  if (!((input[i + 1] >= 'a' && input[i + 1] <= 'z') || (input[i + 1] >= 'A' && input[i + 1] <= 'Z'))) {
+    this.addToken(Type.TYPE, this.auxChar, this.row, this.column - this.auxChar.length + 1);
+    this.clean();
+  } else {
+    this.state = 9;
+  }
+  break;
+} else { this.state = 9; this.addCharacter(char); } break;
 
-        // --- agua ---
-        case 61: if (char === 'u') { this.state = 62; this.addCharacter(char); } else { this.state = 9; this.addCharacter(char); } break;
-        case 62: if (char === 'a') { this.state = 63; this.addCharacter(char); } else { this.state = 9; this.addCharacter(char); } break;
-        case 63: if (!((char >= 'a' && char <= 'z') || (char >= 'A' && char <= 'Z'))) {
-          this.addToken(Type.TYPE, this.auxChar, this.row, this.column - this.auxChar.length); this.clean(); i--;
-        } else { this.state = 9; this.addCharacter(char); } break;
+// --- agua ---
+case 60: if (char === 'u') { this.state = 61; this.addCharacter(char); } else { this.state = 9; this.addCharacter(char); } break;
+case 61: if (char === 'a') { this.state = 62; this.addCharacter(char); } else { this.state = 9; this.addCharacter(char); } break;
+case 62: if (!((char >= 'a' && char <= 'z') || (char >= 'A' && char <= 'Z'))) {
+  this.addToken(Type.TYPE, this.auxChar, this.row, this.column - this.auxChar.length); this.clean(); i--;
+} else { this.state = 9; this.addCharacter(char); } break;
 
-        // --- dragon ---
-        case 64: if (char === 'a') { this.state = 65; this.addCharacter(char); } else { this.state = 9; this.addCharacter(char); } break;
-        case 65: if (char === 'g') { this.state = 66; this.addCharacter(char); } else { this.state = 9; this.addCharacter(char); } break;
-        case 66: if (char === 'o') { this.state = 67; this.addCharacter(char); } else { this.state = 9; this.addCharacter(char); } break;
-        case 67: if (char === 'n') { this.state = 68; this.addCharacter(char); } else { this.state = 9; this.addCharacter(char); } break;
-        case 68: if (!((char >= 'a' && char <= 'z') || (char >= 'A' && char <= 'Z'))) {
-          this.addToken(Type.TYPE, this.auxChar, this.row, this.column - this.auxChar.length); this.clean(); i--;
-        } else { this.state = 9; this.addCharacter(char); } break;
+// --- dragon ---
+case 63: if (char === 'a') { this.state = 64; this.addCharacter(char); } else { this.state = 9; this.addCharacter(char); } break;
+case 64: if (char === 'g') { this.state = 65; this.addCharacter(char); } else { this.state = 9; this.addCharacter(char); } break;
+case 65: if (char === 'o') { this.state = 66; this.addCharacter(char); } else { this.state = 9; this.addCharacter(char); } break;
+case 66: if (char === 'n') { this.state = 67; this.addCharacter(char); } else { this.state = 9; this.addCharacter(char); } break;
+case 67: if (!((char >= 'a' && char <= 'z') || (char >= 'A' && char <= 'Z'))) {
+  this.addToken(Type.TYPE, this.auxChar, this.row, this.column - this.auxChar.length); this.clean(); i--;
+} else { this.state = 9; this.addCharacter(char); } break;
 
-        // --- fuego ---
-        case 69: if (char === 'u') { this.state = 70; this.addCharacter(char); } else { this.state = 9; this.addCharacter(char); } break;
-        case 70: if (char === 'e') { this.state = 71; this.addCharacter(char); } else { this.state = 9; this.addCharacter(char); } break;
-        case 71: if (char === 'g') { this.state = 72; this.addCharacter(char); } else { this.state = 9; this.addCharacter(char); } break;
-        case 72: if (char === 'o') { this.state = 73; this.addCharacter(char); } else { this.state = 9; this.addCharacter(char); } break;
-        case 73: if (!((char >= 'a' && char <= 'z') || (char >= 'A' && char <= 'Z'))) {
-          this.addToken(Type.TYPE, this.auxChar, this.row, this.column - this.auxChar.length); this.clean(); i--;
-        } else { this.state = 9; this.addCharacter(char); } break;
+// --- fuego ---
+case 68: if (char === 'u') { this.state = 69; this.addCharacter(char); } else { this.state = 9; this.addCharacter(char); } break;
+case 69: if (char === 'e') { this.state = 70; this.addCharacter(char); } else { this.state = 9; this.addCharacter(char); } break;
+case 70: if (char === 'g') { this.state = 71; this.addCharacter(char); } else { this.state = 9; this.addCharacter(char); } break;
+case 71: if (char === 'o') { this.state = 72; this.addCharacter(char); } else { this.state = 9; this.addCharacter(char); } break;
+case 72: if (!((char >= 'a' && char <= 'z') || (char >= 'A' && char <= 'Z'))) {
+  this.addToken(Type.TYPE, this.auxChar, this.row, this.column - this.auxChar.length); this.clean(); i--;
+} else { this.state = 9; this.addCharacter(char); } break;
 
-        // --- normal ---
-        case 74: if (char === 'o') { this.state = 75; this.addCharacter(char); } else { this.state = 9; this.addCharacter(char); } break;
-        case 75: if (char === 'r') { this.state = 76; this.addCharacter(char); } else { this.state = 9; this.addCharacter(char); } break;
-        case 76: if (char === 'm') { this.state = 77; this.addCharacter(char); } else { this.state = 9; this.addCharacter(char); } break;
-        case 77: if (char === 'a') { this.state = 78; this.addCharacter(char); } else { this.state = 9; this.addCharacter(char); } break;
-        case 78: if (char === 'l') { this.state = 79; this.addCharacter(char); } else { this.state = 9; this.addCharacter(char); } break;
-        case 79: if (!((char >= 'a' && char <= 'z') || (char >= 'A' && char <= 'Z'))) {
-          this.addToken(Type.TYPE, this.auxChar, this.row, this.column - this.auxChar.length); this.clean(); i--;
-        } else { this.state = 9; this.addCharacter(char); } break;
+// --- normal ---
+case 73: if (char === 'o') { this.state = 74; this.addCharacter(char); } else { this.state = 9; this.addCharacter(char); } break;
+case 74: if (char === 'r') { this.state = 75; this.addCharacter(char); } else { this.state = 9; this.addCharacter(char); } break;
+case 75: if (char === 'm') { this.state = 76; this.addCharacter(char); } else { this.state = 9; this.addCharacter(char); } break;
+case 76: if (char === 'a') { this.state = 77; this.addCharacter(char); } else { this.state = 9; this.addCharacter(char); } break;
+case 77: if (char === 'l') {
+  this.addCharacter(char);
+  if (!((input[i + 1] >= 'a' && input[i + 1] <= 'z') || (input[i + 1] >= 'A' && input[i + 1] <= 'Z'))) {
+    this.addToken(Type.TYPE, this.auxChar, this.row, this.column - this.auxChar.length + 1);
+    this.clean();
+  } else {
+    this.state = 9;
+  }
+  break;
+} else { this.state = 9; this.addCharacter(char); } break;
       }
     }
     return this.tokenList;
