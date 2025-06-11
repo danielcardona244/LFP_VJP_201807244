@@ -38,7 +38,8 @@ function extraerJugadores(tokens: any[]): any[] {
 // Selecciona los 6 pokémon con mayor IV total (salud + ataque + defensa)
 function seleccionarMejoresPokemons(pokemons: any[]): any[] {
     pokemons.forEach(p => {
-        p.ivTotal = (p.salud || 0) + (p.ataque || 0) + (p.defensa || 0);
+        const suma = (p.salud || 0) + (p.ataque || 0) + (p.defensa || 0);
+        p.ivTotal = ((suma / 45) * 100);
     });
     pokemons.sort((a, b) => b.ivTotal - a.ivTotal);
     return pokemons.slice(0, 6);
