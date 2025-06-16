@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Pensum Interactivo</title>
+    <link rel="stylesheet" href="/css/index.css">
+    <script defer src="/js/index.js"></script>
+</head>
+<body>
+    <nav>
+        <button onclick="location.reload()">🏠 Home</button>
+        <button onclick="abrirErrores()">📄 Reporte de Errores</button>
+        <label>
+            📂 Cargar
+            <input type="file" id="fileInput" accept=".plfp" hidden>
+        </label>
+        <button onclick="guardarArchivo()">💾 Guardar</button>
+        <button onclick="limpiarEditor()">🧹 Limpiar</button>
+    </nav>
+
+    <main>
+        <textarea id="editor" placeholder="Escribe o carga un archivo .plfp aquí..."></textarea>
+        <button onclick="analizarTexto()">🔍 Analizar</button>
+        
+        <h3>📑 Tabla de Tokens</h3>
+        <table id="tokenTable">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Fila</th>
+                    <th>Columna</th>
+                    <th>Lexema</th>
+                    <th>Token</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </main>
+</body>
+</html>

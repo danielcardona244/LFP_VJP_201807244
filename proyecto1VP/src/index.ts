@@ -14,9 +14,14 @@ app.use(express.json());
 // Rutas de análisis léxico
 app.use("/api", analyzeRouter);
 
-// Página principal (puedes personalizarla luego)
+// Página principal
 app.get('/', (req, res) => {
     res.render('pages/index');
+});
+
+// Manejo de rutas no encontradas
+app.use((req, res) => {
+    res.status(404).send('Página no encontrada');
 });
 
 app.listen(PORT, () => {

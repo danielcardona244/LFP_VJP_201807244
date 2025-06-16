@@ -1,5 +1,5 @@
 export enum TokenType {
-    RESERVED,    // Palabra reservada
+    RESERVED_WORD,    // Palabra reservada
     STRING,      // Cadena de texto
     NUMBER,      // Número entero
     SYMBOL       // Símbolo especial
