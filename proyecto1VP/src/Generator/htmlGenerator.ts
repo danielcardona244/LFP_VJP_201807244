@@ -37,10 +37,14 @@ export function generarHTMLPensum(tokens: Token[]): string {
     function parseCarrera() {
         next(); // 'Carrera'
         next(); // ':'
-        while (tokens[index].type === TokenType.STRING) {
-            carrera.nombre += tokens[index++].lexeme + " ";
+        while (
+            tokens[index] &&
+            (tokens[index].type === TokenType.STRING || tokens[index].lexeme === '"')
+        ) {
+            const lex = tokens[index++].lexeme;
+            if (lex !== '"') carrera.nombre += lex + " ";
         }
-        carrera.nombre = carrera.nombre.trim();
+        carrera.nombre = carrera.nombre.trim().replace(/"/g, '');
         next(); // '{'
         while (match("Semestre")) parseSemestre();
     }
@@ -71,7 +75,15 @@ export function generarHTMLPensum(tokens: Token[]): string {
                     codigo = next().lexeme;
                     break;
                 case "Nombre":
-                    nombre = next().lexeme.replace(/"/g, '');
+                    let nombreParts: string[] = [];
+                    while (
+                        tokens[index] &&
+                        (tokens[index].type === TokenType.STRING || tokens[index].lexeme === '"')
+                    ) {
+                        const lex = tokens[index++].lexeme;
+                        if (lex !== '"') nombreParts.push(lex);
+                    }
+                    nombre = nombreParts.join(" ");
                     break;
                 case "Creditos":
                     creditos = parseInt(next().lexeme);

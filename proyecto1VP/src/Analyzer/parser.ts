@@ -21,14 +21,18 @@ export class Parser {
     public parse(): boolean {
         this.position = 0;
         this.errors = [];
-        // Inicia el análisis sintáctico desde la raíz
-        this.parseCarrera();
-        // Si quedan tokens sin consumir, es error
-        if (this.position < this.tokens.length) {
-            const token = this.tokens[this.position];
-            this.errors.push(new SyntaxError(token.row, token.column, token.lexeme, "Tokens inesperados al final del archivo"));
-            return false;
+
+        // ✅ Permitir múltiples bloques de 'Carrera'
+        while (this.position < this.tokens.length) {
+            if (this.peekReserved("Carrera")) {
+                this.parseCarrera();
+            } else {
+                const token = this.tokens[this.position];
+                this.errors.push(new SyntaxError(token.row, token.column, token.lexeme, "Se esperaba 'Carrera'"));
+                break;
+            }
         }
+
         return this.errors.length === 0;
     }
 
@@ -58,15 +62,15 @@ export class Parser {
         this.expect(TokenType.RESERVED_WORD, "Carrera", "Se esperaba 'Carrera'");
         this.expect(TokenType.SYMBOL, ":", "Se esperaba ':' después de 'Carrera'");
         this.parseNombreCarrera();
-        this.expect(TokenType.SYMBOL, "{", "Se esperaba '{' para abrir el bloque de la carrera");
+        this.expect(TokenType.SYMBOL, "[", "Se esperaba '[' para abrir el bloque de la carrera");
         while (this.peekReserved("Semestre")) {
             this.parseSemestre();
         }
-        this.expect(TokenType.SYMBOL, "}", "Se esperaba '}' para cerrar el bloque de la carrera");
+        this.expect(TokenType.SYMBOL, "]", "Se esperaba ']' para cerrar el bloque de la carrera");
     }
 
     private parseNombreCarrera() {
-        // Consume uno o más tokens STRING antes de la llave {
+        // Consume uno o más tokens STRING antes de la llave [
         let found = false;
         while (
             this.position < this.tokens.length &&
@@ -94,43 +98,42 @@ export class Parser {
     }
 
     private parseCurso() {
-        // Curso { ... }
+        // Curso: número {
         this.expect(TokenType.RESERVED_WORD, "Curso", "Se esperaba 'Curso'");
+        this.expect(TokenType.SYMBOL, ":", "Se esperaba ':' después de 'Curso'");
+        this.expect(TokenType.NUMBER, undefined, "Se esperaba el código del curso");
         this.expect(TokenType.SYMBOL, "{", "Se esperaba '{' para abrir el bloque del curso");
+
         // Atributos del curso
-        while (this.peekReserved("Codigo") || this.peekReserved("Nombre") || this.peekReserved("Creditos") || this.peekReserved("Prerrequisitos")) {
+        while (this.peekReserved("Nombre") || this.peekReserved("Area") || this.peekReserved("Prerrequisitos")) {
             this.parseAtributo();
         }
+
         this.expect(TokenType.SYMBOL, "}", "Se esperaba '}' para cerrar el bloque del curso");
     }
 
     private parseAtributo() {
         const token = this.tokens[this.position];
         switch (token.lexeme) {
-            case "Codigo":
-                this.expect(TokenType.RESERVED_WORD, "Codigo");
-                this.expect(TokenType.SYMBOL, ":");
-                this.expect(TokenType.NUMBER, undefined, "Se esperaba el código del curso");
-                break;
             case "Nombre":
                 this.expect(TokenType.RESERVED_WORD, "Nombre");
                 this.expect(TokenType.SYMBOL, ":");
                 this.expect(TokenType.STRING, undefined, "Se esperaba el nombre del curso");
                 break;
-            case "Creditos":
-                this.expect(TokenType.RESERVED_WORD, "Creditos");
+            case "Area":
+                this.expect(TokenType.RESERVED_WORD, "Area");
                 this.expect(TokenType.SYMBOL, ":");
-                this.expect(TokenType.NUMBER, undefined, "Se esperaba la cantidad de créditos");
+                this.expect(TokenType.NUMBER, undefined, "Se esperaba el código del área");
                 break;
             case "Prerrequisitos":
                 this.expect(TokenType.RESERVED_WORD, "Prerrequisitos");
                 this.expect(TokenType.SYMBOL, ":");
-                this.expect(TokenType.SYMBOL, "[", "Se esperaba '[' para abrir la lista de prerrequisitos");
+                this.expect(TokenType.SYMBOL, "(", "Se esperaba '(' para abrir la lista de prerrequisitos");
                 // Puede haber cero o más números separados por coma
                 while (this.match(TokenType.NUMBER)) {
                     if (!this.match(TokenType.SYMBOL, ",")) break;
                 }
-                this.expect(TokenType.SYMBOL, "]", "Se esperaba ']' para cerrar la lista de prerrequisitos");
+                this.expect(TokenType.SYMBOL, ")", "Se esperaba ')' para cerrar la lista de prerrequisitos");
                 break;
             default:
                 this.errors.push(new SyntaxError(token.row, token.column, token.lexeme, "Atributo desconocido en curso"));

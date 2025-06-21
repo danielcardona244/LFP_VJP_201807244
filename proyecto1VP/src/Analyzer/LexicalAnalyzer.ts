@@ -1,9 +1,12 @@
 import { Token, TokenType, LexError } from "./Tokens";
 
+// Lista de palabras reservadas válidas en el lenguaje
 const RESERVED_WORDS = [
-  "Carrera", "Semestre", "Curso", "Codigo", "Nombre", "Creditos", "Prerrequisitos"
+  "Carrera", "Semestre", "Curso", "Codigo", "Nombre", "Creditos", "Prerrequisitos", "Area"
 ];
-const SYMBOLS = [":", "{", "}", "[", "]", ","];
+
+// Lista de símbolos válidos (se agregó ; ( ) )
+const SYMBOLS = [";", ":", "{", "}", "[", "]", ",", "(", ")"];
 
 export class LexicalAnalyzer {
     private tokens: Token[] = [];
@@ -19,7 +22,7 @@ export class LexicalAnalyzer {
         // 3. Números
         // 4. Símbolos
         // 5. Caracteres desconocidos
-        const regex = /"([^"\n\r]*)"|[A-Za-zÁÉÍÓÚáéíóúÜüÑñ]+|\d+|[:{}\[\],]|[^\s]/g;
+        const regex = /"([^"\n\r]*)"|[A-Za-zÁÉÍÓÚáéíóúÜüÑñ]+|\d+|[:{}\[\]\(\),;]|[^\s]/g;
         let match: RegExpExecArray | null;
 
         while ((match = regex.exec(input)) !== null) {
@@ -47,8 +50,6 @@ export class LexicalAnalyzer {
                 this.errors.push(new LexError(row, col, lexeme, "Carácter desconocido"));
             }
         }
-
-        // 🚫 Se eliminó la detección extra de comillas sin cerrar para evitar errores falsos
 
         return this.tokens;
     }
