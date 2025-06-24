@@ -1,11 +1,14 @@
-//servidor
-import express from 'express'
+import express from 'express';
+import { analyze } from './controllers/Analyze.controller';
 
 const app = express();
-const PORT = 3000;
 
+// Permite recibir texto plano desde Postman
+app.use(express.text());
 
-app.listen(PORT, () => {
-    console.log(`Servidor corriendo en puerto ${PORT}`);
+// Define una ruta POST específica para analizar el texto
+app.post('/analyze', analyze);
 
-} );
+app.listen(3000, () => {
+    console.log(`Servidor corriendo en puerto 3000`);
+});
