@@ -8,9 +8,12 @@ function loadFile() {
     reader.readAsText(fileInput.files[0]);
 }
 
-function analyze() {
+let lastCode = ""; // Guarda el código actual para reanalizar si el usuario da "Continuar"
+
+function analyze(force = false) {
     const code = document.getElementById('editor').value;
-    fetch('/analyze', {
+    lastCode = code;
+    fetch('/analyze' + (force ? '?force=true' : ''), {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain' },
         body: code
@@ -47,7 +50,34 @@ function analyze() {
         };
         // Oculta el reporte al analizar
         document.getElementById('report').style.display = 'none';
+
+        // Si hay errores léxicos y stop=true, muestra solo los errores y el botón "Continuar"
+        if (data.stop) {
+            showReport('lexicalErrors');
+            document.getElementById('continueBtn').style.display = 'inline-block';
+            document.getElementById('analyzeBtn').disabled = true;
+            return; // Detiene aquí, no sigue mostrando nada más
+        } else {
+            document.getElementById('continueBtn').style.display = 'none';
+            document.getElementById('analyzeBtn').disabled = false;
+        }
+
+        const reportDiv = document.getElementById('report');
+        if (data.lexicalErrors && data.lexicalErrors.length > 0) {
+            reportDiv.innerHTML = "<b>¡Error léxico detectado!</b><br>" + (data.lexicalErrorsHTML || '');
+            reportDiv.style.display = 'block';
+        } else if (data.syntaxErrors && data.syntaxErrors.length > 0) {
+            reportDiv.innerHTML = "<b>¡Error sintáctico detectado!</b><br>" + (data.syntaxErrorsHTML || '');
+            reportDiv.style.display = 'block';
+        } else {
+            reportDiv.innerHTML = data.symbolTableHTML || '<i>No hay tabla de símbolos</i>';
+            reportDiv.style.display = 'block';
+        }
     });
+}
+
+function continueAnalysis() {
+    analyze(true); // Fuerza el análisis aunque haya errores léxicos
 }
 
 function showReport(type) {

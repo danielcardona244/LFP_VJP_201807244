@@ -32,18 +32,9 @@ export function translateTokens(tokens: Token[]): string {
 
         // Traducción de if
         if (token.typeToken === Type.R_IF) {
-            output += "if";
-            i++;
-            // Copia la condición (hasta la llave de apertura)
-            while (i < tokens.length && tokens[i].typeToken !== Type.KEY_O) {
-                output += tokens[i].lexeme;
-                i++;
-            }
-            // Llave de apertura
-            if (tokens[i]?.typeToken === Type.KEY_O) {
-                output += " {\n";
-                i++;
-            }
+            const result = translateIf(tokens, i);
+            output += result.code;
+            i = result.nextIndex;
             continue;
         }
 
@@ -195,4 +186,100 @@ export function translateTokens(tokens: Token[]): string {
     }
 
     return output;
+}
+
+function translateBlock(tokens: Token[], startIndex: number): { code: string, nextIndex: number } {
+    let output = "";
+    let i = startIndex;
+    let braceCount = 0;
+    if (tokens[i]?.typeToken === Type.KEY_O) {
+        output += "{\n";
+        i++;
+        braceCount = 1;
+        while (i < tokens.length && braceCount > 0) {
+            // Traduce if anidados y else
+            if (tokens[i].typeToken === Type.R_IF) {
+                const result = translateIf(tokens, i);
+                output += result.code;
+                i = result.nextIndex;
+                continue;
+            }
+            if (tokens[i].typeToken === Type.R_ELSE) {
+                output += "else ";
+                i++;
+                const block = translateBlock(tokens, i);
+                output += block.code;
+                i = block.nextIndex;
+                continue;
+            }
+            // Llave de apertura
+            if (tokens[i].typeToken === Type.KEY_O) {
+                braceCount++;
+                output += "{\n";
+                i++;
+                continue;
+            }
+            // Llave de cierre
+            if (tokens[i].typeToken === Type.KEY_C) {
+                braceCount--;
+                output += "}\n";
+                i++;
+                if (braceCount === 0) break;
+                continue;
+            }
+            // Console.WriteLine
+            if (
+                tokens[i].typeToken === Type.R_CONSOLE &&
+                tokens[i + 1]?.typeToken === Type.PERIOD &&
+                tokens[i + 2]?.typeToken === Type.R_WRITELINE
+            ) {
+                output += "console.log";
+                i += 3;
+                while (i < tokens.length && tokens[i].typeToken !== Type.SEMICOLON) {
+                    output += tokens[i].lexeme;
+                    i++;
+                }
+                output += ";\n";
+                i++;
+                continue;
+            }
+            // Declaraciones, asignaciones, etc. (puedes agregar más casos aquí)
+            output += tokens[i].lexeme;
+            if (tokens[i].typeToken === Type.SEMICOLON) output += "\n";
+            i++;
+        }
+    }
+    return { code: output, nextIndex: i };
+}
+
+function translateIf(tokens: Token[], startIndex: number): { code: string, nextIndex: number } {
+    let output = "if";
+    let i = startIndex + 1;
+    // Copia la condición completa entre PAR_O y PAR_C
+    if (tokens[i]?.typeToken === Type.PAR_O) {
+        output += "(";
+        i++;
+        let parenCount = 1;
+        while (i < tokens.length && parenCount > 0) {
+            if (tokens[i].typeToken === Type.PAR_O) {
+                output += "(";
+                parenCount++;
+            } else if (tokens[i].typeToken === Type.PAR_C) {
+                parenCount--;
+                output += ")";
+                if (parenCount === 0) {
+                    i++; // Avanza después del PAR_C final
+                    break;
+                }
+            } else {
+                output += tokens[i].lexeme;
+            }
+            i++;
+        }
+    }
+    // Traduce el bloque del if
+    const block = translateBlock(tokens, i);
+    output += block.code;
+    i = block.nextIndex;
+    return { code: output, nextIndex: i };
 }

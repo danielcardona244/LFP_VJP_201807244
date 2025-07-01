@@ -2,46 +2,59 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Transpilador C# a TypeScript</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 30px; }
-        textarea { width: 100%; height: 200px; }
-        .output, .console, .report { margin-top: 20px; }
-        .report { display: none; }
-        button { margin-right: 10px; }
-        table { border-collapse: collapse; margin-top: 10px; }
-        th, td { border: 1px solid #888; padding: 4px 8px; }
-        th { background: #eee; }
-    </style>
+    <title>Transpilador USAC</title>
+    <link rel="stylesheet" href="/css/index.css">
 </head>
 <body>
-    <h1>Transpilador C# a TypeScript</h1>
-    <input type="file" id="fileInput" accept=".cs">
-    <button onclick="loadFile()">Cargar archivo</button>
-    <button onclick="analyze()">Analizar</button>
-    <button onclick="clearAll()">Limpiar</button>
-    <br><br>
-    <label for="editor">Editor C#:</label>
-    <textarea id="editor"></textarea>
+    <header>
+        <h1>Transpilador USAC</h1>
+        <nav>
+            <div class="dropdown">
+                <button class="dropbtn">Archivo</button>
+                <div class="dropdown-content">
+                    <button onclick="clearAll()">Limpiar Editor</button>
+                    <label for="fileInput">Cargar Archivo</label>
+                    <input type="file" id="fileInput" accept=".cs" onchange="loadFile()" hidden>
+                </div>
+            </div>
+            <a href="#" onclick="showReport('tokens')">Token Report</a>
+            <a href="#" onclick="showReport('lexicalErrors')">Error Léxico</a>
+            <a href="#" onclick="showReport('syntaxErrors')">Error Sintáctico</a>
+            <a href="#" onclick="showReport('symbols')">Tabla de Símbolos</a>
+        </nav>
+    </header>
 
-    <div class="output">
-        <h2>Salida TypeScript</h2>
-        <textarea id="tsOutput" readonly></textarea>
-    </div>
+    <main>
+        <section class="editor-section">
+            <div class="editor">
+                <h2>Editor de Texto en C#</h2>
+                <textarea id="editor" placeholder="using System;..."></textarea>
+            </div>
 
-    <div class="console">
-        <h2>Consola (Console.WriteLine)</h2>
-        <textarea id="consoleOutput" readonly></textarea>
-    </div>
+            <div class="translator">
+                <h2>Salida Traducida a TypeScript</h2>
+                <textarea id="tsOutput" readonly></textarea>
+            </div>
+        </section>
 
-    <div>
-        <button onclick="showReport('tokens')">Tokens</button>
-        <button onclick="showReport('lexicalErrors')">Errores Léxicos</button>
-        <button onclick="showReport('syntaxErrors')">Errores Sintácticos</button>
-        <button onclick="showReport('symbols')">Tabla de Símbolos</button>
-    </div>
+        <div class="center-btn">
+            <button onclick="analyze()">Analizar</button>
+        </div>
 
-    <div id="report" class="report"></div>
+        <section class="output-section">
+            <div class="console">
+                <h2>Salida de Consola</h2>
+                <textarea id="consoleOutput" readonly></textarea>
+            </div>
+
+            <div class="report">
+                <h2>Reportes</h2>
+                <div id="report">
+                    <i>No hay datos</i>
+                </div>
+            </div>
+        </section>
+    </main>
 
     <script src="/js/index.js"></script>
 </body>

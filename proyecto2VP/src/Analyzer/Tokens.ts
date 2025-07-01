@@ -18,7 +18,7 @@ export enum Type {
     PLUS,      // +
     MINUS,     // -
     MULT,      // *
-    DIV,       // /
+           // /
     INC,       // ++
     DEC,       // --
     EQUAL,     // ==

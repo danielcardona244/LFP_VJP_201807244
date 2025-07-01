@@ -42,7 +42,7 @@ export class Parser {
             { production: "ARITHMETIC", first: [Type.PAR_O, Type.IDENTIFIER, Type.INTEGER, Type.DECIMAL, Type.STRING, Type.CHAR, Type.R_FALSE, Type.R_TRUE] },
             { production: "ARITHMETIC_P", first: [Type.PLUS, Type.MINUS] },
             { production: "RELATIONAL", first: [Type.EQUAL, Type.DIFF, Type.LESS, Type.LESS_EQ, Type.GREATER, Type.GREATER_EQ] },
-            { production: "TERM_P", first: [Type.MULT, Type.DIV] },
+            { production: "TERM_P", first: [Type.MULT, Type.DIVISION] },
             { production: "FACTOR", first: [Type.PAR_O, Type.IDENTIFIER, Type.INTEGER, Type.DECIMAL, Type.STRING, Type.CHAR, Type.R_FALSE, Type.R_TRUE] }
         ];
         this.preAnalysis = this.tokens[this.pos];
@@ -89,12 +89,10 @@ export class Parser {
     }
 
     private listInstructionsP() {
-        // Solo recursiona si hay una instrucción válida adelante
         if (this.isFirst("LIST_INSTRUCTIONS_P")) {
             this.instruction();
             this.listInstructionsP();
         }
-        // Si no, termina (epsilon)
     }
 
     private instruction() {
@@ -148,8 +146,6 @@ export class Parser {
         let value: string | number | boolean | null = null;
         if (this.isFirst("ID_ASIGN_P")) {
             this.expect(Type.ASSIGN);
-            // Aquí podrías mejorar para obtener el valor real de la expresión
-            // Por simplicidad, solo tomamos el siguiente token si es literal o identificador
             if (
                 this.preAnalysis.typeToken === Type.INTEGER ||
                 this.preAnalysis.typeToken === Type.DECIMAL ||
@@ -163,7 +159,6 @@ export class Parser {
             }
             this.expression();
         }
-        // Agrega a la tabla de símbolos
         this.symbolTable.add({
             name: idToken.lexeme,
             type,
@@ -280,7 +275,10 @@ export class Parser {
 
     private expression() {
         this.arithmetic();
-        this.relational();
+        if (this.isFirst("RELATIONAL")) {
+            this.expect(this.preAnalysis.typeToken);
+            this.arithmetic();
+        }
     }
 
     private relational() {
@@ -364,7 +362,6 @@ export class Parser {
     private isFirst(production: Production): boolean {
         const firsts = this.firsts.find(f => f.production === production);
         if (!firsts) return false;
-        console.log("isFirst", production, this.preAnalysis?.typeTokenString);
         return firsts.first.includes(this.preAnalysis.typeToken);
     }
 
