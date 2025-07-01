@@ -1,47 +1,58 @@
 import { Request, Response } from "express";
 import { LexicalAnalyzer } from "../Analyzer/LexicalAnalyzer";
-import { Parser } from "../Analyzer/parser"; // Para el futuro
-// import { translateTokens } from "../Analyzer/translator"; // Para el futuro
+import { Parser } from "../Analyzer/parser";
+import { translateTokens } from "../Analyzer/translator";
+import { generateTokensHTML, generateErrorsHTML, generateSymbolTableHTML } from "../utils/htmlReports";
 
 export const analyze = (req: Request, res: Response) => {
     const scanner = new LexicalAnalyzer();
     scanner.scanner(req.body);
 
-    // Preparar tokens y errores para la respuesta (formato tabla)
     const tokens = scanner.getTokenList().map(token => ({
-        row: (token as any).row,
-        column: (token as any).column,
-        lexeme: (token as any).lexeme,
-        type: (token as any).typeTokenString
+        row: token.row,
+        column: token.column,
+        lexeme: token.lexeme,
+        type: token.typeTokenString
     }));
 
-    const errors = scanner.getErrorList().map(error => ({
-        row: (error as any).row,
-        column: (error as any).column,
-        lexeme: (error as any).lexeme,
-        description: "Carácter no reconocido"
-    }));
+    const lexicalErrors = scanner.getErrorReport();
 
-    // Aquí puedes agregar análisis sintáctico y traducción en el futuro
-
-    // Después de obtener los tokens y errores léxicos:
-    if (errors.length === 0) {
-        // Solo si no hay errores léxicos, continúa con el parser
+    if (lexicalErrors.length === 0) {
         const parser = new Parser(scanner.getTokenList());
-        const isValid = parser.parse();
-        const syntaxErrors = parser.getErrors();
+        parser.parse();
+        const syntaxErrors = parser.getErrorReport();
+        const symbolTable = parser.getSymbolTable();
+
+        let translation = "";
+        if (syntaxErrors.length === 0) {
+            translation = translateTokens(scanner.getTokenList());
+        }
+
+        // Generar HTMLs
+        const tokensHTML = generateTokensHTML(tokens);
+        const lexicalErrorsHTML = generateErrorsHTML(lexicalErrors);
+        const syntaxErrorsHTML = generateErrorsHTML(syntaxErrors);
+        const symbolTableHTML = generateSymbolTableHTML(symbolTable);
 
         res.json({
             tokens,
-            errors,
+            lexicalErrors,
             syntaxErrors,
-            isValid
+            translation,
+            symbolTable,
+            tokensHTML,
+            lexicalErrorsHTML,
+            syntaxErrorsHTML,
+            symbolTableHTML
         });
     } else {
-        // Si hay errores léxicos, solo muestra esos
+        const tokensHTML = generateTokensHTML(tokens);
+        const lexicalErrorsHTML = generateErrorsHTML(lexicalErrors);
         res.json({
             tokens,
-            errors
+            lexicalErrors,
+            tokensHTML,
+            lexicalErrorsHTML
         });
     }
 };

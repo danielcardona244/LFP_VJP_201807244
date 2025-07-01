@@ -1,18 +1,19 @@
 import { Token, Type } from './Tokens';
+import { ErrorReport } from "./Errors";
 
 type ReservedWord = {
     lexeme: string;
     token: Type;
 };
-export class LexicalAnalyzer {
 
+export class LexicalAnalyzer {
     private row: number;
     private column: number;
     private state: number;
     private auxChar: string;
     private tokenList: Token[];
-    private errorList: Token[];
     private reservedWords: ReservedWord[];
+    private errorReport = new ErrorReport();
 
     constructor() {
         this.row = 1;
@@ -20,7 +21,6 @@ export class LexicalAnalyzer {
         this.state = 0;
         this.auxChar = '';
         this.tokenList = [];
-        this.errorList = [];
         this.reservedWords = [
             { lexeme: 'using', token: Type.R_USING },
             { lexeme: 'System', token: Type.R_SYSTEM },
@@ -413,15 +413,15 @@ export class LexicalAnalyzer {
     }
 
     adderror(type: Type, lexeme: string, row: number, column: number) {
-        this.errorList.push(new Token(type, lexeme, row, column));
+        this.errorReport.add(row, column, lexeme, "Carácter no reconocido");
     }
 
     getTokenList() {
         return this.tokenList;
     }
 
-    getErrorList() {
-        return this.errorList;
+    getErrorReport() {
+        return this.errorReport.getAll();
     }
     
 }

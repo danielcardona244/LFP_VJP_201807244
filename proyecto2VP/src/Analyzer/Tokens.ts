@@ -61,7 +61,7 @@ export enum Type {
 
 export class Token {
 
-    public typeToken: Type;
+public typeToken: Type;
     public lexeme: string;
     public row: number;
     public column: number;

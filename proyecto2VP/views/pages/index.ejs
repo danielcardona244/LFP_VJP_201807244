@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Transpilador C# a TypeScript</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 30px; }
+        textarea { width: 100%; height: 200px; }
+        .output, .console, .report { margin-top: 20px; }
+        .report { display: none; }
+        button { margin-right: 10px; }
+        table { border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #888; padding: 4px 8px; }
+        th { background: #eee; }
+    </style>
+</head>
+<body>
+    <h1>Transpilador C# a TypeScript</h1>
+    <input type="file" id="fileInput" accept=".cs">
+    <button onclick="loadFile()">Cargar archivo</button>
+    <button onclick="analyze()">Analizar</button>
+    <button onclick="clearAll()">Limpiar</button>
+    <br><br>
+    <label for="editor">Editor C#:</label>
+    <textarea id="editor"></textarea>
+
+    <div class="output">
+        <h2>Salida TypeScript</h2>
+        <textarea id="tsOutput" readonly></textarea>
+    </div>
+
+    <div class="console">
+        <h2>Consola (Console.WriteLine)</h2>
+        <textarea id="consoleOutput" readonly></textarea>
+    </div>
+
+    <div>
+        <button onclick="showReport('tokens')">Tokens</button>
+        <button onclick="showReport('lexicalErrors')">Errores Léxicos</button>
+        <button onclick="showReport('syntaxErrors')">Errores Sintácticos</button>
+        <button onclick="showReport('symbols')">Tabla de Símbolos</button>
+    </div>
+
+    <div id="report" class="report"></div>
+
+    <script src="/js/index.js"></script>
+</body>
+</html>
